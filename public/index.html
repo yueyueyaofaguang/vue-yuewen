@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1847418_l2g11t5b8r.css"/>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+  </body>
+  <style>
+    html,body{
+      height: 100%;
+      width: 100%;
+      margin:0px;
+    }
+
+    .main{
+      width: 80%;
+      margin:0 auto;
+      padding: 40px;
+      min-height: 500px;
+
+    }
+
+    .clearfix:before,
+    .clearfix:after {
+      display: table;
+      content: "";
+    }
+    .clearfix:after {
+      clear: both
+    }
+
+    .main-title{
+      font-size: 25px;
+    }
+
+    .main-title .iconfont{
+      font-size: 25px;
+      margin-right: 5px;
+    }
+
+    .card-item{
+      display: flex;
+      padding: 15px;
+      transition: all .3s ease;
+    }
+
+    .card-item .el-avatar.el-avatar--circle{
+      margin-right: 40px;
+    }
+
+    .el-tag {
+      float: left;
+      margin-right: 20px;
+      margin-bottom: 5px;
+    }
+
+    .card-item-content{
+      width: 100%;
+    }
+
+    .card-item-content h3{
+      margin: 0;
+      text-align: left;
+    }
+
+    .card-item-text span{
+      display: inline-block;
+      margin-right: 1em;
+    }
+
+    .comment-item-bottom .el-card{
+      padding: 5px;
+    }
+
+    #pagination{
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .image {
+      width: 100%;
+      display: block;
+    }
+
+    .right{
+      display: inline-block;
+      float: right;
+    }
+
+    a {
+      color: inherit; /* blue colors for links too */
+      text-decoration: inherit; /* no underline */
+    }
+  </style>
+</html>
