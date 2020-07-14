@@ -80,7 +80,6 @@
                 </el-tabs>
             </div>
         </transition>
-
     </div>
 </template>
 
@@ -117,7 +116,6 @@
                 },
                 responseResult:[],
                 getCodeLoading:false,
-                code:'',
                 rule: {
                     email:[
                         {required:true,message: '请输入邮箱', trigger: 'blur'},
@@ -169,6 +167,9 @@
                                 replace:false
                             })
                         }
+                        else{
+                            this.$message(successResponse.data.rspMsg);
+                        }
                     })
                     .catch(failResponse=>{
                         console.log(failResponse);
@@ -199,12 +200,6 @@
             },
 
             register(){
-                let code = localStorage.getItem("code");
-                if(code != this.code){
-                    this.$message('验证码不正确');
-                    return;
-                }
-
                 this.$axios
                     .post('/register',{
                         email:this.registerForm.email,

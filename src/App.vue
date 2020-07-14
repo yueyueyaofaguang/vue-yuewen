@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <Header></Header>
+    <Header v-if="!['callback','Login'].includes($route.name)"></Header>
     <router-view></router-view>
-    <Footer></Footer>
+    <Footer v-if="!['callback','Login'].includes($route.name)"></Footer>
   </div>
 </template>
 
@@ -16,15 +16,17 @@ export default {
     Footer,Header
   }
 }
-</script>`
+</script>
 
-<style>
-#app {
-  height: 100%;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /*text-align: center;*/
-  color: #2c3e50;
-}
+<style lang="stylus">
+  @import "stylus-reset"
+  reset();
+  #app
+    height: 100%
+    font-family: Avenir, Helvetica, Arial, sans-serif
+    -webkit-font-smoothing: antialiased
+    -moz-osx-font-smoothing: grayscale
+    /*text-align: center;*/
+    color: #2c3e50
+
 </style>

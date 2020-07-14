@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="comment-item-bottom">
-            <p class="el-icon-s-comment" @click="boxshow = !boxshow">{{ commentData.subComments.length }}条回复</p>
+            <p class="el-icon-s-comment replySubBtn" @click="boxshow = !boxshow">{{ commentData.subComments.length }}条回复</p>
             <transition name="draw">
                 <el-card class="box-card" v-show="boxshow">
                 <div class="sub-item-container" >
@@ -181,5 +181,9 @@
 
     .el-button--primary{
         margin-bottom: 10px;
+    }
+
+    .replySubBtn{
+        cursor: pointer;
     }
 </style>

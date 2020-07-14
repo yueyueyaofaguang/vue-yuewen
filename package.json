@@ -13,6 +13,7 @@
     "element-ui": "^2.13.2",
     "mavon-editor": "^2.9.0",
     "moment": "^2.27.0",
+    "stylus-reset": "0.0.1",
     "vue": "^2.6.11",
     "vue-avatar": "^2.3.0",
     "vue-router": "^3.3.4",

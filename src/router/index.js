@@ -43,7 +43,7 @@ export default new Router({
             }
         },
         {
-            path:'/user/',
+            path:'/user/:id',
             name: 'user',
             component: user
         },

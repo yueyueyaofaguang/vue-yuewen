@@ -1,6 +1,5 @@
 <template>
     <div id="#poster">
-        <NavMenu></NavMenu>
         <div class="main">
             <el-row :gutter="20">
                 <el-col :span="16">
@@ -18,17 +17,19 @@
                                             <div class="card-item">
                                                 <div class="card-item-content">
                                                     <p>
-                                                        <router-link to="/question/${notif.post.id}">
+                                                        <el-link @click="updateStatus(notif.id,notif.post.id)">
+<!--                                                        <router-link @click="updateStatus(notif.id)" :to="`/question/${notif.post.id}`">-->
                                                             <span v-if="notif.comment.type == 1">{{notif.comment.userInfo.username }}:</span>
                                                             <span v-else>{{notif.comment.userInfo.username }} 回复 {{notif.comment.parentUserInfo.username }}:</span>
                                                             <span>{{ notif.comment.commentText}}</span>
-                                                        </router-link>
+<!--                                                        </router-link>-->
+                                                        </el-link>
                                                         <span class="right">{{moment(notif.created).format('MMDD, h:mm:ss a')}}</span>
                                                     </p>
                                                     <p>
-                                                        <span>回复我的主题："<router-link to="/question/${notif.post.id}">{{notif.post.title}}</router-link>"</span>
-                                                        <router-link to="/question/${notif.post.id}"><span class="el-icon-chat-dot-square right">回复</span></router-link>
-                                                        <span class="el-icon-delete right del-btn">删除</span>
+                                                        <span>回复我的主题："<router-link :to="`/question/${notif.post.id}`">{{notif.post.title}}</router-link>"</span>
+                                                        <router-link :to="`/question/${notif.post.id}`" @click.native="updateStatus(notif.id)"><span class="el-icon-chat-dot-square right">回复</span></router-link>
+                                                        <span class="el-icon-delete right del-btn" @click="deletNotif(notif.id)">删除</span>
 
                                                     </p>
                                                 </div>
@@ -49,34 +50,19 @@
                 </el-col>
                 <el-col :span="8">
                     <div class="grid-content bg-purple">
-                        <div>
-                            <h3>日日鲜鸡汤</h3>
-                            <el-card :body-style="{ padding: '0px' }">
-                                <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" class="image">
-                                <div style="padding: 14px;">
-                                    <span>好吃的汉堡</span>
-                                    <div class="bottom clearfix">
-<!--                                        <time class="time">{{ currentDate }}</time>-->
-                                        <el-button type="text" class="button">操作按钮</el-button>
-                                    </div>
-                                </div>
-                            </el-card>
-                        </div>
+                        <Clock></Clock>
                     </div>
                 </el-col>
             </el-row>
         </div>
-        <Footer></Footer>
     </div>
 </template>
 
 <script>
-    import Footer from "@/components/common/Footer";
-    import NavMenu from "@/components/common/NavMenu";
+    import Clock from "@/components/Clock";
 
     export default {
         name: "replies",
-        components: {Footer, NavMenu},
         data(){
             return {
                 activeName: "news",
@@ -98,6 +84,7 @@
         mounted:function () {
             this.getData();
         },
+        components: {Clock},
         methods:{
             getData(){
                 console.log(this.state);
@@ -129,6 +116,29 @@
             handleCurrentChange(val) {
                 this.currentPage = val;
                 this.getData();
+            },
+            updateStatus(nid,pid){
+                console.log("setState");
+                this.$axios
+                    .get(`/notification/updateStatus/${nid}`)
+                    .then(successResponse=>{
+                        console.log(successResponse);
+                        this.$router.push(`/question/${pid}`);
+                        return false;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            },
+            deletNotif(id){
+                this.$axios
+                    .delete(`/notification/${id}`)
+                    .then(successResponse=>{
+                        console.log(successResponse);
+                        if(successResponse.data.rspCode==200){
+                           this.$message("删除成功");
+                        }
+                    })
             }
         }
     }
