@@ -73,10 +73,10 @@
         background-color:#D75B42;
         border: 0.6em solid white;
         border-radius: 100%;
-        height: 8em;
+        height: 10em;
         margin-top:-50%;
         position: relative;
-        width: 8em;
+        width: 10em;
     }
     .clock span {
         background: white;

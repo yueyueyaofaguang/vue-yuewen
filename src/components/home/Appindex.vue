@@ -11,63 +11,52 @@
                         <el-tabs v-model="activeName" @tab-click="handleClick" class="index-tab">
                             <el-tab-pane v-for="tab in tabPane"
                                          :key="tab.label" :label="tab.label" :name="tab.name" >
-
-                                <el-card class="box-card"  v-if="totalPage>0">
-                                    <div v-for="post in data" :key="post.id" class="text">
-                                        <router-link :to="`/question/${post.id}`">
-                                            <div class="card-item">
-                                            <Avatar  :username="post.userBases.username"
-                                                     :src="post.userBases.avatar"
-                                                     background-color="#ccc"
-                                                     color="#fff"
-                                                     style=" vertical-align: middle;"
-                                                     :inline="true">
-                                            </Avatar>
-                                            <div class="card-item-content">
-                                                <h3>{{post.title}}</h3>
-
-                                                <p class="card-item-text">
-                                                    <span>{{post.commentCount }}个评论数</span>
-                                                    <span>{{post.readCount}}次浏览</span>
-                                                    <span>{{ moment(post.created).format('MMMM Do YYYY, h:mm:ss a') }}</span>
-                                                </p>
-
-                                                <p class="card-item-tags">
-                                                    <el-tag type="success" v-for="tag in post.tags" :key="tag">{{tag}}</el-tag>
-                                                </p>
+                                <div v-if="totalPage>0">
+                                        <Item v-for="post in data"
+                                              :key="post.id"
+                                              :uid="post.userBases.id"
+                                              :username="post.userBases.username"
+                                              :avatar="post.userBases.avatar"
+                                              :title="post.title"
+                                              :time="moment(post.created).format('YYYY-MM-DD, hh:mm:ss')"
+                                              :path="`/question/${post.id}`"
+                                        >
+                                            <p slot="content">
+                                                <span>{{post.commentCount }}个评论数</span>
+                                                <span>{{post.readCount}}次浏览</span>
+                                            </p>
+                                            <div slot="item-bot">
+                                                <el-tag type="danger" v-for="tag in post.tags" :key="tag">{{tag}}</el-tag>
                                             </div>
-                                        </div>
-                                        </router-link>
-                                    </div>
-                                </el-card>
-                                <el-card class="box-card" style="text-align: center" v-else>
-                                    <img src="src/assets/emptyState.png" class="empty-state-img"/>
+                                        </Item>
+                                        <el-pagination
+                                                class="pagination"
+                                                background
+                                                layout="prev, pager, next"
+                                                @current-change="handleCurrentChange"
+                                                :currentPage="currentPage"
+                                                :page-count="totalPage">
+                                        </el-pagination>
+                                </div>
+                                <div class="empty-state-container" style="text-align: center" v-else>
+                                    <img src="../../../static/img/emptyState.png" class="-img"/>
                                     <p><el-link type="danger">暂时没有找到你想问的问题，你来创建一个？</el-link></p>
-                                </el-card>
-
-                                <el-pagination
-                                        id="pagination"
-                                        background
-                                        layout="prev, pager, next"
-                                        @current-change="handleCurrentChange"
-                                        :currentPage="currentPage"
-                                        :page-count="totalPage">
-                                </el-pagination>
+                                </div>
                             </el-tab-pane>
                         </el-tabs>
                     </div>
                 </el-col>
                 <el-col :span="8">
                     <div class="grid-content bg-purple">
-                        <div v-if="todayOnHistory">
+                        <div class="todayOnHistory" v-if="todayOnHistory">
                             <h3>历史上的今天</h3>
                             <el-card :body-style="{ padding: '0px' }">
-                                <img :src="todayOnHistory.eventDetail.picUrl[0].url" class="image">
+                                <img :src="todayOnHistory.eventDetail.picUrl[0].url">
                                 <div style="padding: 14px;text-align: center">
-                                    <span class="history-title">{{todayOnHistory.title}}</span>
+                                    <span class="title">{{todayOnHistory.title}}</span>
                                     <div class="bottom clearfix">
                                         <time class="time">{{ todayOnHistory.date }}</time>
-                                        <p class="history-content">{{todayOnHistory.eventDetail.content}}</p>
+                                        <p class="content">{{todayOnHistory.eventDetail.content}}</p>
                                         <el-button type="text" class="button" @click="viewMore">view more</el-button>
                                     </div>
                                 </div>
@@ -81,8 +70,9 @@
 
                         <div>
                             <h3>联系站长</h3>
-                            <img src="src/assets/weixin.png" class="image">
-                            <p class="my-desc">今天天气很好，你也很可爱，那么你想跟我做朋友吗</p>
+                            <img src="../../../static/img/weixin.png" class="image">
+                            <p class="my-desc">今天天气很好，你也很可爱，那么你想跟我做朋友吗 &#62;&#60;</p>
+                            <p class="my-desc">如果你的答案是YES,那请打开微信吧</p>
                         </div>
 
                     </div>
@@ -93,10 +83,10 @@
 </template>
 
 <script>
-    import Avatar from 'vue-avatar'
+   import Item from "@/components/common/Item";
     export default {
         name: "Appindex",
-        components: {Avatar},
+        components: {Item},
         data() {
             return {
                 currentDate: new Date(),
@@ -146,6 +136,19 @@
                 let params = this.getParams(val);
                 this.getData(params);
             },
+            handleClick(){
+                let params = this.getParams(1);
+                console.log(params);
+                this.getData(params);
+            },
+            search(type,val){
+                if(type == 2) this.searchText = val;
+                let params = {
+                    current: 1,
+                    searchText: type== 2? val:this.searchText
+                };
+                this.getData(params);
+            },
             getData(params){
                 this.$axios
                     .get('/post/',{params:params})
@@ -169,10 +172,6 @@
                         console.log(error);
                     })
             },
-            handleClick(){
-                let params = this.getParams(1);
-                this.getData(params);
-            },
             getParams(current){
                 let params = {
                     current: current,
@@ -193,14 +192,6 @@
                         break;
                 }
                 return params;
-            },
-            search(type,val){
-                if(type == 2) this.searchText = val;
-                let params = {
-                    current: 1,
-                    searchText: type== 2? val:this.searchText
-                };
-                this.getData(params);
             },
             viewMore(){
                 const h = this.$createElement;
@@ -223,49 +214,29 @@
     }
 </script>
 
-<style scoped>
-    .vue-avatar--wrapper{
-        margin-right: 20px;
-    }
-    .text {
-        font-size: 14px;
-    }
+<style lang="stylus" scoped>
+    .todayOnHistory
+        img
+            width 100%
+            max-height 250px
+        .title
+            font-weight bold
+        .content
+            overflow hidden
+            text-overflow ellipsis
+            display -webkit-box
+            -webkit-line-clamp 4
+            line-clamp 4
+            -webkit-box-orient vertical
 
-    .card-item:hover{
-        cursor: pointer;
-        background-color: rgba(128,138,135,0.1);
-    }
+    .empty-state-container
+        text-align center
+        img
+            height 200px
 
-    .search-container{
-        display: flex;
-    }
+    .hotTag
+        pointer()
 
-    .hotTag{
-        cursor: pointer;
-    }
-
-    .image{
-        max-height: 350px;
-    }
-
-    .history-title{
-        font-weight: bold;
-    }
-    .history-content{
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 4;
-        line-clamp: 4;
-        -webkit-box-orient: vertical;
-    }
-
-    .empty-state-img{
-        height: 200px;
-    }
-
-    .empty-state-container,.my-desc{
-        text-align: center;
-    }
-
+    .my-desc
+        text-align center
 </style>

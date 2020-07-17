@@ -4,56 +4,55 @@
             <el-row :gutter="20">
                 <el-col :span="16">
                     <div class="grid-content bg-purple">
-                        <h3>
-                            {{post.title}}
-                        </h3>
-                        <p>发布于：{{ moment(post.created).format('lll') }} | 阅读数：{{post.readCount}} | 评论数：{{post.commentCount}}</p>
-                        <mavon-editor
-                                class="md"
-                                :value="post.content"
-                                :subfield = "false"
-                                :defaultOpen = "'preview'"
-                                :toolbarsFlag = "false"
-                                :editable="false"
-                                :scrollStyle="true"
-                                :ishljs = "true"
-                        />
-                        <p class="card-item-tags clearfix">
-                            <el-tag type="success" v-for="tag in post.tags" :key="tag" >{{tag}}</el-tag>
-                        </p>
+                        <div class="post-container">
+                            <h3>
+                                {{post.title}}
+                            </h3>
+                            <p class="desc">
+                                <span class="text">发布于：{{ moment(post.created).format('lll') }} | 阅读数：{{post.readCount}} | 评论数：{{post.commentCount}}</span>
+                                <el-link v-show="post.uid == user.id" type="primary" :underline="false" v-on:click="deletePost(post.id)">
+                                    删除
+                                </el-link>
+                            </p>
+                            <mavon-editor
+                                    class="md"
+                                    :value="post.content"
+                                    :subfield = "false"
+                                    :defaultOpen = "'preview'"
+                                    :toolbarsFlag = "false"
+                                    :editable="false"
+                                    :scrollStyle="true"
+                                    :ishljs = "true"
+                            />
+                            <p class="card-item-tags clearfix">
+                                <el-tag type="success" v-for="tag in post.tags" :key="tag" >{{tag}}</el-tag>
+                            </p>
+                        </div>
 
-                        <h3>{{post.commentCount}}个回复</h3>
+                        <div class="comment-container">
+                            <h3>{{post.commentCount}}个回复</h3>
+                            <CommentItem v-for="comment in comments" :key="comment.id"  :post-id="post.id" :comment-data="comment" @comment="loadComments" @del="deleteComment"></CommentItem>
 
-                        <CommentItem v-for="comment in comments" :key="comment.id"  :post-id="post.id" :comment-data="comment" @comment="loadComments"></CommentItem>
-
-                        <el-pagination
-                                id="pagination"
-                                background
-                                layout="prev, pager, next"
-                                @current-change="handleCurrentChange"
-                                :currentPage="currentPage"
-                                :page-count="totalPage">
-                        </el-pagination>
+                            <el-pagination
+                                    class="pagination"
+                                    background
+                                    layout="prev, pager, next"
+                                    @current-change="handleCurrentChange"
+                                    :currentPage="currentPage"
+                                    :page-count="totalPage">
+                            </el-pagination>
+                        </div>
 
                         <div class="reply-container">
                             <h3>提交评论</h3>
-                            <div class="comment-item">
-                                <div class="comment-item-top">
-                                    <Avatar  :username="user.username"
-                                             :src="user.avatar"
-                                             background-color="#ccc"
-                                             color="#fff"
-                                             style=" vertical-align: middle;border-radius: 4px;"
-                                             :inline="true"
-                                             :rounded="false"
-                                    >
-                                    </Avatar>
-                                    <div class="comment-item-tr">
-                                        <p>评论人</p>
-                                        <p>{{user.username}}</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <Item :username="user.username"
+                                  :avatar="user.avatar"
+                                  :bottom="false"
+                                  :avatar-round="true"
+                                  title="评论人"
+                            >
+                                <span slot="content">{{user.username}}</span>
+                            </Item>
                             <div v-loading="loading" element-loading-background="rgba(0, 0, 0, 0.8)">
                                 <el-input
                                         type="textarea"
@@ -62,7 +61,7 @@
                                         v-model="value"
                                 >
                                 </el-input>
-                                <el-button type="primary" icon="el-icon-edit" circle class="btn-write-comment right" @click="reply"></el-button>
+                                <el-button icon="el-icon-edit" class="btn-write-comment right" @click="reply">写评论</el-button>
                             </div>
                         </div>
                     </div>
@@ -74,23 +73,13 @@
 
                         <div>
                            <h3>发起人</h3>
-                           <div class="comment-item">
-                               <div class="comment-item-top">
-                                   <Avatar  :username="post.userBases.username"
-                                            :src="post.userBases.avatar"
-                                            background-color="#ccc"
-                                            color="#fff"
-                                            style=" vertical-align: middle;border-radius: 4px;"
-                                            :inline="true"
-                                            :rounded="false"
-                                   >
-                                   </Avatar>
-                                   <div class="comment-item-tr">
-                                       <p>{{post.userBases.username}}</p>
-                                       <p>个人描述</p>
-                                   </div>
-                               </div>
-                           </div>
+                            <Item :username="user.username"
+                                  :avatar="user.avatar"
+                                  :bottom="false"
+                                  :avatar-round="true"
+                            >
+                                <span slot="content">{{user.username}}</span>
+                            </Item>
                        </div>
 
                         <div>
@@ -98,7 +87,7 @@
                             <ul>
                                 <li v-for="post in relativePost" :key="post.id">
                                     <el-link href="`http://localhost:8080/question/${post.id}`" target="_blank">
-                                        {{post.title}}
+                                       {{post.title}}
                                     </el-link>
                                 </li>
                             </ul>
@@ -113,12 +102,12 @@
 
 <script>
     import CommentItem from '@/components/common/CommentItem';
-    import Avatar from "vue-avatar";
+    import Item from "@/components/common/Item";
     import Clock from "@/components/Clock";
 
     export default {
         name: "question",
-        components: {Avatar,CommentItem,Clock},
+        components: {CommentItem,Clock,Item},
         data() {
             return {
                 post:null,
@@ -127,7 +116,8 @@
                 loading:false,
                 currentPage:1,
                 user:null,
-                relativePost:[]
+                relativePost:[],
+                totalPage:null
             }
         },
         mounted:function () {
@@ -188,6 +178,7 @@
                             this.totalPage = successResponse.data.data.totalPage;
                             this.comments = successResponse.data.data.data;
                         }
+                        this.loadPost();
                     })
             },
             handleCurrentChange(val){
@@ -220,39 +211,59 @@
                             this.relativePost = successResponse.data.data;
                         }
                     })
+            },
+            deletePost(id){
+                this.$confirm('此操作将永久删除该问题, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios
+                        .delete(`/post/${id}`)
+                        .then(successResponse=>{
+                            console.log(successResponse);
+                            if(successResponse.data.rspCode == 200){
+                                this.$message({
+                                    type: 'success',
+                                    message: '删除成功!'
+                                });
+                                this.$router.replace({
+                                    path: '/index',
+                                    replace:false
+                                })
+                            }
+                        })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+            deleteComment(){
+                console.log("删除评论啦")
+                this.loadPost();
+                this.loadComments();
             }
         }
     }
 </script>
 
-<style scoped>
-    .comment-item{
-        padding: 5px;
-    }
-
-    .comment-item-top{
-        display: flex;
-    }
-
-    .comment-item-top p{
-        margin: 0;
-    }
-
-    .comment-item-top p:first-child{
-        margin-bottom: 5px;
-    }
-
-    .comment-item-tr{
-        padding-left: 10px;
-        width: 100%;
-    }
-
-    .sub-item-container,
-    .sub-comment-ipt{
-        margin-bottom: 10px;
-    }
-
-    .btn-write-comment{
-        margin-top: 10px;
-    }
+<style lang="stylus" scoped>
+    .post-container
+        .desc
+            margin-bottom 10px
+            .text
+                vertical-align middle
+                margin-right: 10px;
+        .v-note-wrapper
+            margin-bottom 10px
+    .reply-container
+        .item
+            border none
+            margin 0 px
+            >>>.item-top
+                padding 0 0 10px 0
+        .el-textarea
+            margin-bottom 10px
 </style>

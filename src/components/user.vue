@@ -3,11 +3,10 @@
         <div class="main">
             <div class="user-home-page">
                 <div class="bg">
-                    <img src="src/assets/home_page_bg.jpg" class="img-home-page">
+                    <img src="@/assets/home_page_bg.jpg">
                 </div>
                 <div class="user-data" v-if="!editable">
                     <el-card :body-style="{ padding: '20px',display:'flex' }">
-<!--                        <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png">-->
                         <Avatar  :username="user.username"
                                  :src="user.avatar"
                                  background-color="#ccc"
@@ -24,43 +23,84 @@
                         </div>
                     </el-card>
                 </div>
-                <el-card class="box-card">
-                    <div  v-if="!editable" class="question-container">
-                        <h3 class="main-title">
-                            <span class="iconfont icon-tiwen"></span>
-                            {{ isMyself? "我的提问":"ta的提问" }}
-                        </h3>
-                        <div class="text item">
-                            <div class="card-item" v-for="post in data" :key="post.id">
-                                <div class="card-item-content">
-                                    <h3>{{post.title}}<span class="el-icon-delete right del-btn" v-on:click="deletePost(post.id)">删除</span></h3>
 
-                                    <p class="card-item-text">
-                                        <span>{{post.commentCount }}个评论数</span>
-                                         <span>{{post.readCount}}次浏览</span>
-                                        <span>{{ moment(post.created).format('MMMM Do YYYY, h:mm:ss a') }}</span>
-                                    </p>
-
-                                    <p class="card-item-tags">
-                                        <el-tag type="success" v-for="tag in post.tags" :key="tag">{{tag}}</el-tag>
-                                    </p>
-                                </div>
+                <el-tabs v-if="!editable" type="border-card" @tab-click="handleClick" v-model="activeName">
+                    <el-tab-pane name="post">
+                        <span slot="label"><i class="el-icon-question"></i>
+                            {{isMyself?'我':'TA'}}的提问
+                        </span>
+                        <div v-if="postData.data" class="question-item-container">
+                            <div v-for="post in postData.data" :key="post.id" class="question-item">
+                                <el-link :href="`http://localhost:8080/question/${post.id}`" type="primary" :underline="false">{{post.title}}</el-link>
+                                <span class="desc">回复({{post.commentCount}})</span>
+                                <span class="right desc">{{moment(post.created).subtract(10, 'days').calendar()}}</span>
                             </div>
+                            <el-pagination
+                                    class="pagination"
+                                    background
+                                    layout="prev, pager, next"
+                                    @current-change="handleCurrentChange"
+                                    :currentPage="postData.currentPage"
+                                    :page-count="postData.totalPage">
+                            </el-pagination>
+                        </div>
+                        <div v-else class="empty-state-container" style="text-align: center">
+                            <img src="@/assets/emptyState.png" class="img"/>
+                            <p><el-link type="danger">
+                                {{isMyself?'你':'他'}}暂时还没有发布问题{{isMyself?'，快去提问吧':''}}</el-link></p>
                         </div>
 
-                        <el-pagination
-                                id="pagination"
-                                background
-                                layout="prev, pager, next"
-                                @current-change="handleCurrentChange"
-                                :currentPage="currentPage"
-                                :page-count="totalPage">
-                        </el-pagination>
-                    </div>
+                    </el-tab-pane>
+                    <el-tab-pane name="reply" label="我的回复" v-if="isMyself">
+                        <div v-if="replyData.data" class="reply-item-container">
+                            <div v-for="reply in replyData.data" :key="reply.id" class="reply-item">
+                                <div class="reply-item-left">
+                                    <img src="@/assets/reply.png">
+                                </div>
+                                <div class="reply-item-right">
+                                    <div class="item-right-top">
+                                        <div class="intro">
+                                            <div class="title">
+                                                <el-link type="primary">{{user.username}}</el-link>
+                                                <span>{{reply.type == 1?'回复':'评论'}}</span>
+                                            </div>
+                                            <div class="value">{{moment(reply.created).subtract(10, 'days').calendar()}}</div>
+                                        </div>
+                                        <div class="content">
+                                            <i class="iconfont icon-baojiaquotation2"></i>
+                                                {{reply.commentText}}
+                                            <i class="iconfont icon-baojiaquotation"></i>
+                                        </div>
+                                    </div>
+                                    <div class="item-right-bottom">
+                                        <el-link :href="`http://localhost:8080/question/${reply.post.id}`" type="primary" :underline="false">
+                                            {{reply.post.title}}
+                                        </el-link>
+                                        <span>回复({{reply.post.commentCount}})</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <el-pagination
+                                    class="pagination"
+                                    background
+                                    layout="prev, pager, next"
+                                    @current-change="handleCurrentChange"
+                                    :currentPage="replyData.currentPage"
+                                    :page-count="replyData.totalPage">
+                            </el-pagination>
+                        </div>
+                        <div v-else class="empty-state-container" style="text-align: center">
+                            <img src="@/assets/emptyState.png" class="img"/>
+                            <p><el-link type="danger">您暂时还没有评论快去评论吧</el-link></p>
+                        </div>
 
-                    <div v-else class="edit-container" >
-                        <h2>头像</h2>
+                    </el-tab-pane>
+                </el-tabs>
+                <el-card v-else >
+                    <div class="edit-container">
+                        <h2>修改个人资料<i class="iconfont icon-return right" @click="toggleEditPancel"></i></h2>
 
+                        <h3>头像</h3>
                         <div class="alter-avatar-container">
                             <img v-if="imageUrl!=null" :src="imageUrl" class="avatar">
                             <el-upload class="avatar-uploader"
@@ -73,14 +113,13 @@
                         </div>
 
                         <el-form :rules="rule" :model="form" ref="form">
-
-                            <h2>用户名</h2>
+                            <h3>用户名</h3>
                             <el-form-item prop="username">
                                 <el-input placeholder="请输入用户名" v-model="form.username" prefix-icon="el-icon-s-custom"></el-input>
                             </el-form-item>
 
                             <el-form-item style="width: 100%">
-                                <el-button type="danger" style="width: 100%;background: #505458;border: none" v-on:click="editProfile">更新个人资料</el-button>
+                                <el-button type="primary" style="width: 100%;border: none" v-on:click="editProfile">更新个人资料</el-button>
                             </el-form-item>
                         </el-form>
 
@@ -95,11 +134,17 @@
     import Avatar from "vue-avatar";
     export default {
         name: "user",
-        components: {Avatar},
+        components: { Avatar},
         data(){
             return{
-                data:null,
-                currentPage:1,
+                postData:{
+                    currentPage:1,
+                    data:null
+                },
+                replyData:{
+                    currentPage:1,
+                    data:null
+                },
                 user:null,
                 isMyself:false,
                 imageUrl: null,
@@ -119,12 +164,14 @@
                             message: '姓名不支持特殊字符',
                             trigger: 'blur'
                         }]
-                }
+                },
+                activeName:'post'
             }
         },
         mounted: function () {
             this.loadUserInfo();
-            this.loadPosts();
+            this.loadPosts(1);
+            this.loadReply(1);
             //判断用户
             this.$axios
                 .post(`/isMyself/${this.$route.params.id}`,{
@@ -138,29 +185,55 @@
                 })
         },
         methods:{
-            loadPosts(){
+            loadPosts(currentPage){
                 this.$axios
-                    .get(`/post/${this.$route.params.id}/${this.currentPage}`,{
+                    .get(`/post/${this.$route.params.id}/${currentPage}`,{
                         token:localStorage.getItem('token')})
                     .then(successResponse=>{
                         console.log(successResponse);
                         if(successResponse.data.rspCode==200){
-                            let data = successResponse.data.data.data;
-                            this.totalPage = successResponse.data.data.totalPage;
-                            for (let i = 0; i < data.length; i++) {
-                                data[i].tags = data[i].tags.split(',');
-                            }
-                            this.data =  data;
-                            this.user = data[0].userBases;
+                            let postData = successResponse.data.data;
+                            let posts = postData.data;
+                            for(let i = 0;i<posts.length;i++)
+                                posts[i].tags = posts[i].tags.split(';');
+                            this.postData.totalPage = postData.totalPage;
+                            this.postData.data = posts;
                         }
                     })
                     .catch(error => {
                         console.log(error);
                     })
             },
+            loadReply(currentPage){
+                this.$axios
+                    .get(`/comment/getReply/${this.$route.params.id}/${currentPage}`)
+                    .then(successResponse=>{
+                        console.log(successResponse);
+                        if(successResponse.data.rspCode==200){
+                            let replyData = successResponse.data.data;
+                            this.replyData.data = replyData.data;
+                            this.replyData.totalPage = replyData.totalPage;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            },
+            loadPancelData(val){
+                switch (this.activeName) {
+                    case "post":
+                        this.loadPosts(val);
+                        break;
+                    case "reply":
+                        this.loadReply(val);
+                }
+            },
             handleCurrentChange(val) {
-                this.currentPage = val;
-                this.loadPosts();
+                this[`${this.activeName}Data`].currentPage = val;
+                this.loadPancelData(val);
+            },
+            handleClick() {
+                this.loadPancelData(1);
             },
             deletePost(id){
                 this.$axios
@@ -208,9 +281,9 @@
 
             },
             toggleEditPancel(){
-                this.editable = true;
-                this.form.username = this.user.username;
-                this.form.avatar = this.user.avatar;
+                this.editable = !this.editable;
+                this.form.username = this.user.username || '';
+                this.form.avatar = this.user.avatar || '';
             },
             loadUserInfo(){
                 this.$axios
@@ -240,77 +313,102 @@
     }
 </script>
 
-<style scoped>
-    .user-data{
-        margin-top: -50px;
-    }
+<style lang="stylus" scoped>
+    .bg
+        img
+            height 300px
+            width 100%
 
-    .img-home-page{
-        height: 300px;
-        width: 100%;
-    }
+    .user-data
+        margin-top -50px
+        .username
+            font-size 30px
+            font-weight bold
+        .edit-btn
+            cursor pointer
+    .question-item-container
+        .question-item
+            padding 10px 0
+            border-bottom 2px dashed #eee
+            .el-link
+                margin-right 5px
+            .desc
+                font-size 12px
+                color #7f7f7f
+    .reply-item-container
+        .reply-item
+            display flex
+            padding 14px 15px
+            border-bottom 2px dashed #eee
+            .reply-item-left
+                margin-right 20px
+            .reply-item-right
+                flex 1
+                .item-right-top
+                    .intro
+                        display flex
+                        justify-content space-between
+                        font-size 14px
+                        margin-bottom 6px
+                        .title
+                            .el-link
+                                margin-right 4px
+                                vertical-align middle
+                            span
+                                vertical-align middle
+                    .content
+                        font-size 12px
+                        margin-bottom 10px
+                .item-right-bottom
+                    position relative
+                    padding 14px 15px
+                    border-radius 4px
+                    background-color #fafafa
+                    font-size 12px
+                    .el-link
+                        font-size 12px
+                        vertical-align middle
+                    span
+                        vertical-align middle
+                    &:after
+                        content ''
+                        width: 0;
+                        height: 0;
+                        border: 8px solid transparent;
+                        border-bottom-color: #fafafa;
+                        position: absolute;
+                        top -16px
+                        left 8px
 
-    .card-item:hover{
-        cursor: pointer;
-        background-color: rgba(128,138,135,0.1);
-    }
-
-    .del-btn{
-        font-size: 14px;
-        visibility: hidden;
-    }
-
-    .card-item:hover .del-btn{
-        visibility: visible;
-    }
-
-    /*/avatr*/
-    .avatar{
-        height: 235px;
-        width: 235px;
-    }
-    .edit-container{
-        width: 60%;
-        margin: 0 auto;
-    }
-
-    .alter-avatar-container{
-        display: flex;
-    }
-
-    .avatar-uploader .avatar-uploader-icon{
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .avatar-uploader .avatar-uploader-icon:hover {
-        border-color: #409EFF;
-    }
-
-    .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 178px;
-        height: 178px;
-        line-height: 178px;
-        text-align: center;
-    }
-    .avatar {
-        width: 178px;
-        height: 178px;
-        display: block;
-        margin-right: 20px;
-    }
-    /*//user*/
-    .username{
-        font-size: 30px;
-        font-weight: bold;
-    }
-
-    .edit-btn{
-        cursor: pointer;
-    }
+    .edit-container
+        width 60%
+        margin 0 auto
+        .alter-avatar-container
+            display flex
+            .avatar-uploader
+                .avatar-uploader-icon
+                    font-size: 28px;
+                    color: #8c939d;
+                    width: 178px;
+                    height: 178px;
+                    line-height: 178px;
+                    text-align: center;
+                    border 1px dashed #d9d9d9
+                    border-radius 6px
+                    cursor pointer
+                    position relative
+                    overflow hidden
+                &:hover
+                    border-color: #409EFF;
+            .avatar
+                width 178px
+                height 178px
+                display block
+                margin-right 20px
+        .icon-return
+            cursor pointer
+    .empty-state-container
+        text-align center
+        img
+            height 200px
 </style>

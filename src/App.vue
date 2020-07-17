@@ -19,8 +19,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import "stylus-reset"
-  reset();
+  @import "~@/assets/stylus/reset.css"
   #app
     height: 100%
     font-family: Avenir, Helvetica, Arial, sans-serif

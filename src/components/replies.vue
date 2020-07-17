@@ -13,38 +13,43 @@
                                          :key="tab.label"
                                          :label="tab.label"
                                          :name="tab.name">
-                                <div v-for="notif in data" :key="notif.id" class="text item">
-                                            <div class="card-item">
-                                                <div class="card-item-content">
-                                                    <p>
-                                                        <el-link @click="updateStatus(notif.id,notif.post.id)">
-<!--                                                        <router-link @click="updateStatus(notif.id)" :to="`/question/${notif.post.id}`">-->
-                                                            <span v-if="notif.comment.type == 1">{{notif.comment.userInfo.username }}:</span>
-                                                            <span v-else>{{notif.comment.userInfo.username }} 回复 {{notif.comment.parentUserInfo.username }}:</span>
-                                                            <span>{{ notif.comment.commentText}}</span>
-<!--                                                        </router-link>-->
-                                                        </el-link>
-                                                        <span class="right">{{moment(notif.created).format('MMDD, h:mm:ss a')}}</span>
-                                                    </p>
-                                                    <p>
-                                                        <span>回复我的主题："<router-link :to="`/question/${notif.post.id}`">{{notif.post.title}}</router-link>"</span>
-                                                        <router-link :to="`/question/${notif.post.id}`" @click.native="updateStatus(notif.id)"><span class="el-icon-chat-dot-square right">回复</span></router-link>
-                                                        <span class="el-icon-delete right del-btn" @click="deletNotif(notif.id)">删除</span>
-
-                                                    </p>
-                                                </div>
+                                <div class="notif-item-container">
+                                    <div class="notif-item" v-for="notif in data" :key="notif.id">
+                                        <div class="cell">
+                                            <div class="cell-left">
+                                                <span v-if="notif.comment.type == 1">{{notif.comment.userInfo.username }}:</span>
+                                                <span v-else>{{notif.comment.userInfo.username }} 回复 {{notif.comment.parentUserInfo.username }}:</span>
+                                                <span>{{ notif.comment.commentText}}</span>
                                             </div>
+                                            <div class="cell-right">
+                                                <span class="right">{{moment(notif.created).format('MM-DD, h:mm:ss a')}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="cell">
+                                            <div class="cell-left">
+                                                <span>回复我的主题："<router-link :to="`/question/${notif.post.id}`">{{notif.post.title}}</router-link>"</span>
+                                            </div>
+                                            <div class="cell-right">
+                                                <router-link :to="`/question/${notif.post.id}`" @click.native="updateStatus(notif.id)"><span class="reply-btn el-icon-chat-dot-square right">回复</span></router-link>
+                                                <span class="el-icon-delete right del-btn" @click="deletNotif(notif.id)">删除</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-show="totalPage<1" class="empty-state-container" style="text-align: center">
+                                    <img src="@/assets/emptyState.png" class="-img"/>
+                                    <p><el-link type="danger">暂时还没有回复噢～</el-link></p>
                                 </div>
                             </el-tab-pane>
                         </el-tabs>
 
                         <el-pagination
-                                id="pagination"
+                                class="pagination"
                                 background
                                 layout="prev, pager, next"
                                 @current-change="handleCurrentChange"
                                 :currentPage="currentPage"
-                                :page-count="totalPage">>
+                                :page-count="totalPage">
                         </el-pagination>
                     </div>
                 </el-col>
@@ -144,18 +149,26 @@
     }
 </script>
 
-<style scoped>
-    .del-btn{
-        margin-right: 5px;
-        visibility: hidden;
-    }
-
-    .card-item:hover{
-        background-color: rgba(128,138,135,0.1);
-    }
-
-    .card-item:hover .del-btn{
-        visibility: visible;
-    }
-
+<style lang="stylus" scoped>
+    .notif-item
+        padding 5px
+        width 100%
+        .cell
+            display flex
+            justify-content space-between
+            margin-bottom 5px
+        .del-btn
+            margin-right 5px
+            cursor pointer
+            visibility hidden
+        &:hover
+            background-color rgba(128,138,135,0.1);
+            .del-btn
+                visibility visible
+        .reply-btn
+            color #2c3e50
+    .empty-state-container
+        text-align center
+        img
+            height 200px
 </style>

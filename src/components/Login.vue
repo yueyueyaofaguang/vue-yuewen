@@ -259,101 +259,67 @@
     }
 </script>
 
-<style scoped>
+<style lang="stylus" scoped>
     @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+    @import "~@/assets/stylus/init.styl"
 
-    #poster{
-        width: 100%;
-        height: 100%;
-        background: #d83d3d;
-    }
+    #poster
+        width 100%
+        height 100%
+        background $googleRed
+        .btn-wrapper
+        .pane-wrapper
+            width: 100%
+            height: 100%
+            align()
+        .pane-wrapper
+            background rgba(0,0,0,.4);
+            .el-tab-pane-container
+                width 400px
+                .social-container
+                    align()
+                    margin-bottom 10px
+                    list-style-type none
+                    text-align center
+                    li
+                        align()
+                        margin 0 5px
+                        height 40px
+                        width 40px
+                        border 1px solid #DDDDDD
+                        border-radius 50%
+                        background-color #fff
+                    a
+                        cursor pointer
+                        text-decoration none
+                        color #333
+        .btn-wrapper
+            .el-button
+                padding 12px 40px
+                -webkit-transition all 0.30s ease-in-out;
+                -moz-transition all 0.30s ease-in-out;
+                -ms-transition all 0.30s ease-in-out;
+                -o-transition all 0.30s ease-in-out;
+            .signUp
+                background $googleRed
+                border 2px solid #fff
+                color #fff
+                &:hover
+                    background #fff
+                    color $googleRed
+            .register
+                background #9e2c2c
+                border 2px solid #9e2c2c
+                color #fff
+                &:hover
+                    background #b13131
+                    border 2px solid #b13131
+        /*过渡*/
+        .fade-enter-active
+        .fade-leave-active
+            transition opacity .5s
 
-    .btn-wrapper,.pane-wrapper{
-        width: 100%;
-        height: 100%;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-
-    .pane-wrapper{
-        background: rgba(0,0,0,.4);
-    }
-
-
-    /* sign-in-container内部 */
-
-    .social-container{
-        padding: 0;
-        list-style-type: none;
-    }
-
-    .social-container li{
-        border: 1px solid #DDDDDD;
-        border-radius: 50%;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        margin: 0 5px;
-        height: 40px;
-        width: 40px;
-        background-color: #fff;
-    }
-
-    .social-container a{
-        cursor: pointer;
-        text-decoration:none;
-        color:#333;
-    }
-
-    .el-tab-pane-container{
-        width: 400px;
-    }
-
-    .el-button-container .el-button.is-round{
-        padding: 12px 40px;
-    }
-
-    .el-button-container .el-button{
-        -webkit-transition: all 0.30s ease-in-out;
-        -moz-transition: all 0.30s ease-in-out;
-        -ms-transition: all 0.30s ease-in-out;
-        -o-transition: all 0.30s ease-in-out;
-    }
-
-    .el-button.signUp{
-        background: #d83d3d;
-        border: 2px solid #fff;
-        color: #fff;
-    }
-
-    .el-button.signUp:hover{
-        background: #fff;
-        color: #d83d3d;
-    }
-
-    .el-button.register{
-        background: #9e2c2c;
-        border: 2px solid #9e2c2c;
-        color: #fff;
-    }
-
-    .el-button.register:hover {
-        background: #b13131;
-        border: 2px solid #b13131;
-    }
-
-    /*过渡*/
-    .fade-enter-active, .fade-leave-active {
-        transition: opacity .5s;
-    }
-    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-        opacity: 0;
-    }
-
-    .social-container{
-        text-align: center;
-    }
+        .fade-enter
+        .fade-leave-to
+            opacity: 0
 </style>

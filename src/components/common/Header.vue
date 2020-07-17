@@ -4,22 +4,23 @@
         <div class="container">
             <ul class="container-left-ul">
                 <li @click="navigateTo('index')">
-                    <img id="icon" src="src/assets/icon.png"/>
+                    <img id="icon" src="../../../static/img/icon.png"/>
                 </li>
             </ul>
             <ul class="container-right-ul">
                 <li @click="tip" class="container-right-li"><span class="el-icon-info"></span>须知</li>
                 <li @click="navigateTo('publish')" class="container-right-li" v-show="hasLogin">提问</li>
-                <li @click="navigateTo('replies')" class="container-right-li">
-                    <i class="iconfont icon-notification"></i>9
+                <li @click="navigateTo('replies')" class="container-right-li" v-show="hasLogin">
+                    <el-badge :value="notifiSize" class="item" type="warning">
+                        <i class="iconfont icon-notification"/>
+                    </el-badge>
                 </li>
 
                 <li v-if="!hasLogin" @click="navigateTo('login')" class="container-right-li">登录</li>
                 <li v-else id="user" @click="toggleSubMenu('user','turnlg')" :class="subMenuList.user.turnlg ? 'menu-item-active' : 'container-right-li'">
                     <span v-if="user">{{user.username}}</span><span class="el-icon-caret-bottom"></span>
                     <ul v-show="subMenuList.user.turnlg">
-                        <li>我的主页</li>
-                        <li>编辑资料</li>
+                        <li @click="navigateTo('user')">我的主页</li>
                         <li>退出登录</li>
                     </ul>
                 </li>
@@ -42,7 +43,7 @@
                     <li @click="navigateTo('publish')">提问</li>
 
                     <li @click="toggleSubMenu('user','turnsm')" v-if="user">
-                        {{user.username}}<span class="el-icon-caret-bottom"></span>
+                       <span v-if="user">{{user.username}}</span><span class="el-icon-caret-bottom"></span>
                         <ul v-show="subMenuList.user.turnsm">
                             <li @click="navigateTo('user')">我的主页</li>
                             <li>编辑资料</li>
@@ -61,7 +62,6 @@
         name: "Footer",
         created(){
             this.loadData();
-
             document.addEventListener('click',(e)=>{
                 if(!this.subMenuList['user']['turnlg']) return;
                 var sp = document.getElementById("user");
@@ -80,7 +80,6 @@
                     index:'/index',
                     publish:'/publish',
                     login:'/login',
-                    user:'/user',
                     replies: '/replies'
                 },
                 subMenuList:{
@@ -91,11 +90,13 @@
                     }
                 },
                 hasLogin:false,
-                user:null
+                user:null,
+                notifiSize:0
             };
         },
         methods: {
             navigateTo (path) { // 激活导航菜单
+                console.log(path);
                 this.$router.push(this.navigateList[path]);
             },
             tip(){
@@ -126,6 +127,16 @@
                             if(successResponse.data.rspCode == 200){
                                 console.log("setUser");
                                 this.user = successResponse.data.data;
+                                this.navigateList.user = `/user/${this.user.id}`
+                            }
+                        })
+                    this.$axios
+                        .post('/notification/getNotificationLen',{
+                            token:token
+                        })
+                        .then(successResponse=>{
+                            if(successResponse.data.rspCode == 200){
+                                this.notifiSize = successResponse.data.data.size;
                             }
                         })
             }
@@ -183,6 +194,8 @@
                     min-width $header-li-width
                     display inline-block
                     text-align center
+                    >>>.el-badge__content
+                        transform: translateX(100%);
                     ul
                         position absolute;
                         top $header-height+5px
