@@ -39,7 +39,7 @@
                                         </el-pagination>
                                 </div>
                                 <div class="empty-state-container" style="text-align: center" v-else>
-                                    <img src="../../../static/img/emptyState.png" class="-img"/>
+                                    <img src="@/assets/emptyState.png" class="-img"/>
                                     <p><el-link type="danger">暂时没有找到你想问的问题，你来创建一个？</el-link></p>
                                 </div>
                             </el-tab-pane>
@@ -70,7 +70,7 @@
 
                         <div>
                             <h3>联系站长</h3>
-                            <img src="../../../static/img/weixin.png" class="image">
+                            <img src="@/assets/weixin.png" class="image">
                             <p class="my-desc">今天天气很好，你也很可爱，那么你想跟我做朋友吗 &#62;&#60;</p>
                             <p class="my-desc">如果你的答案是YES,那请打开微信吧</p>
                         </div>

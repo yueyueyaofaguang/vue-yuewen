@@ -4,7 +4,7 @@
         <div class="container">
             <ul class="container-left-ul">
                 <li @click="navigateTo('index')">
-                    <img id="icon" src="../../../static/img/icon.png"/>
+                    <img id="icon" src="@/assets/icon.png"/>
                 </li>
             </ul>
             <ul class="container-right-ul">
