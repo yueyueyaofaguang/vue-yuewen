@@ -27,7 +27,7 @@
                                         </div>
                                         <div class="cell">
                                             <div class="cell-left">
-                                                <span>回复我的主题："<router-link :to="`/question/${notif.post.id}`">{{notif.post.title}}</router-link>"</span>
+                                                <span>回复我的主题："<router-link :to="`/question/${notif.post.id}`" @click.native="updateStatus(notif.id)">{{notif.post.title}}</router-link>"</span>
                                             </div>
                                             <div class="cell-right">
                                                 <router-link :to="`/question/${notif.post.id}`" @click.native="updateStatus(notif.id)"><span class="reply-btn el-icon-chat-dot-square right">回复</span></router-link>
@@ -37,7 +37,7 @@
                                     </div>
                                 </div>
                                 <div v-show="totalPage<1" class="empty-state-container" style="text-align: center">
-                                    <img src="@/assets/emptyState.png" class="-img"/>
+                                    <img src="@/assets/emptyState.png" class="img"/>
                                     <p><el-link type="danger">暂时还没有回复噢～</el-link></p>
                                 </div>
                             </el-tab-pane>
@@ -134,6 +134,7 @@
                     .catch(error => {
                         console.log(error);
                     })
+                this.$emit('readNotif');
             },
             deletNotif(id){
                 this.$axios

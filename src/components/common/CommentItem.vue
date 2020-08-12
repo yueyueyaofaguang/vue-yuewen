@@ -26,11 +26,11 @@
                       :bubble="true"
                 >
                     <p class="content" slot="content">
-                        <el-link :href="`http://localhost:8080/user/${comment.userInfo.id}`" v-if="comment.parentId == commentData.id" :underline="false"><span>{{comment.userInfo.username }}:</span></el-link>
+                        <el-link :href="`http://112.124.17.27/#/user/${comment.userInfo.id}`" v-if="comment.parentId == commentData.id" :underline="false"><span>{{comment.userInfo.username }}:</span></el-link>
                         <span v-else>
-                            <el-link :href="`http://localhost:8080/user/${comment.userInfo.id}`" :underline="false">{{comment.userInfo.username }}</el-link>
+                            <el-link :href="`http://112.124.17.27/#/user/${comment.userInfo.id}`" :underline="false">{{comment.userInfo.username }}</el-link>
                                 <span class="commentText">回复</span>
-                            <el-link :href="`http://localhost:8080/user/${comment.parentUserInfo.id}`" :underline="false">{{comment.parentUserInfo.username }}</el-link>:
+                            <el-link :href="`http://112.124.17.27/#/user/${comment.parentUserInfo.id}`" :underline="false">{{comment.parentUserInfo.username }}</el-link>:
                         </span>
                         <span class="commentText">{{ comment.commentText}}</span>
                     </p>
@@ -72,23 +72,37 @@
                 placeholder:'',
                 value:'',
                 replyToId:null,
-                loading:false
+                loading:false,
+                hasLogin:false
             }
+        },
+        created:function(){
+            if(localStorage.getItem('token'))
+                this.hasLogin = true;
         },
         methods:{
             replySubComment(username,id){
+                if(!this.hasLogin){
+                    return this.tip();
+                }
                 this.value = '';
                 this.replyIpt = true;
                 this.placeholder = `回复用户${username} :`;
                 this.replyToId = id;
             },
             replyComment(id){
+                if(!this.hasLogin){
+                    return this.tip();
+                }
                 this.value = '';
                 this.replyIpt = true;
                 this.placeholder = '';
                 this.replyToId = id;
             },
             reply(){
+                if(!this.hasLogin){
+                    return this.tip();
+                }
                 this.loading = true;
                 this.$axios
                     .post(`/comment/${this.$props.postId}`,{
@@ -139,6 +153,17 @@
                         message: '已取消删除'
                     });
                 });
+            },
+            tip(){
+                this.$alert('登录后才能够评论', '提醒', {
+                    confirmButtonText: '确定',
+                    callback: () => {
+                        this.$router.replace({
+                            path: '/login',
+                            replace:false
+                        })
+                    }
+                })
             }
         }
     }

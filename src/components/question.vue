@@ -10,7 +10,7 @@
                             </h3>
                             <p class="desc">
                                 <span class="text">发布于：{{ moment(post.created).format('lll') }} | 阅读数：{{post.readCount}} | 评论数：{{post.commentCount}}</span>
-                                <el-link v-show="post.uid == user.id" type="primary" :underline="false" v-on:click="deletePost(post.id)">
+                                <el-link v-show="hasLogin && user && post.uid == user.id" type="primary" :underline="false" v-on:click="deletePost(post.id)">
                                     删除
                                 </el-link>
                             </p>
@@ -45,23 +45,30 @@
 
                         <div class="reply-container">
                             <h3>提交评论</h3>
-                            <Item :username="user.username"
-                                  :avatar="user.avatar"
-                                  :bottom="false"
-                                  :avatar-round="true"
-                                  title="评论人"
-                            >
-                                <span slot="content">{{user.username}}</span>
-                            </Item>
-                            <div v-loading="loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-                                <el-input
-                                        type="textarea"
-                                        :autosize="{ minRows: 6, maxRows: 8}"
-                                        placeholder="请输入内容"
-                                        v-model="value"
+                            <div v-if="hasLogin && user">
+                                <Item v-if="user"
+                                      :username="user.username"
+                                      :avatar="user.avatar"
+                                      :uid="user.id"
+                                      :bottom="false"
+                                      :avatar-round="true"
+                                      title="评论人"
                                 >
-                                </el-input>
-                                <el-button icon="el-icon-edit" class="btn-write-comment right" @click="reply">写评论</el-button>
+                                    <span slot="content" v-if="user">{{user.username}}</span>
+                                </Item>
+                                <div v-loading="loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+                                    <el-input
+                                            type="textarea"
+                                            :autosize="{ minRows: 6, maxRows: 8}"
+                                            placeholder="请输入内容"
+                                            v-model="value"
+                                    >
+                                    </el-input>
+                                    <el-button icon="el-icon-edit" class="btn-write-comment right" @click="reply">写评论</el-button>
+                                </div>
+                            </div>
+                            <div v-else class="tip">
+                                <el-link type="primary" href="http://112.124.17.27/#/login.html"><span class="el-icon-water-cup"></span>嘟噜噜！温馨提醒：登录后才能评论！</el-link>
                             </div>
                         </div>
                     </div>
@@ -73,12 +80,13 @@
 
                         <div>
                            <h3>发起人</h3>
-                            <Item :username="user.username"
-                                  :avatar="user.avatar"
+                            <Item :username="post.userBases.username"
+                                  :avatar="post.userBases.avatar"
+                                  :id = "post.userBases.id"
                                   :bottom="false"
                                   :avatar-round="true"
                             >
-                                <span slot="content">{{user.username}}</span>
+                                <span slot="content">{{post.userBases.username}}</span>
                             </Item>
                        </div>
 
@@ -86,7 +94,7 @@
                             <h3>相关问题</h3>
                             <ul>
                                 <li v-for="post in relativePost" :key="post.id">
-                                    <el-link href="`http://localhost:8080/question/${post.id}`" target="_blank">
+                                    <el-link :href="`http://112.124.17.27/#/question/${post.id}`" target="_blank">
                                        {{post.title}}
                                     </el-link>
                                 </li>
@@ -117,13 +125,15 @@
                 currentPage:1,
                 user:null,
                 relativePost:[],
-                totalPage:null
+                totalPage:null,
+                hasLogin:false
             }
         },
         mounted:function () {
             //增加阅读数量
             this.$axios(`/post/addReadCount/${this.$route.params.id}`)
                 .then(sucessResponse=>{
+                    console.log("增加阅读量");
                     if(sucessResponse.data.rspCode==200){
                         console.log(sucessResponse);
                         //获取文章数据
@@ -133,16 +143,7 @@
 
             this.loadComments();
             //获取用户数据
-            this.$axios
-                .post('/getUserInfo',{
-                    token:localStorage.getItem('token')
-                })
-                .then(sucessResponse=> {
-                    if (sucessResponse.data.rspCode == 200) {
-                        console.log("set user")
-                        this.user = sucessResponse.data.data;
-                    }
-                })
+            this.loadUserInfo();
         },
         methods: {
             reply(){
@@ -180,6 +181,21 @@
                         }
                         this.loadPost();
                     })
+            },
+            loadUserInfo() {
+                if(localStorage.getItem('token')) {
+                    this.hasLogin = true;
+                    this.$axios
+                        .post('/getUserInfo', {
+                            token: localStorage.getItem('token')
+                        })
+                        .then(sucessResponse => {
+                            if (sucessResponse.data.rspCode == 200) {
+                                console.log("set user")
+                                this.user = sucessResponse.data.data;
+                            }
+                        })
+                }
             },
             handleCurrentChange(val){
                 this.currentPage = val;
@@ -266,4 +282,7 @@
                 padding 0 0 10px 0
         .el-textarea
             margin-bottom 10px
+        .tip
+            text-align center
+            font-size 16px
 </style>

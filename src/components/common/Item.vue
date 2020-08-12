@@ -2,7 +2,7 @@
     <div class="item">
         <div class="item-top">
             <div class="item-top-left">
-                <el-link :href="`http://localhost:8080/user/${uid}`" :underline="false">
+                <el-link :href="`http://112.124.17.27/#/user/${uid}`" :underline="false">
                 <Avatar  :username="username"
                          :src="avatar"
                          background-color="#ccc"
@@ -131,7 +131,7 @@
             background-color #fafafa;
             padding: 10px 15px;
             height 40px
-            font-size 14px
+            font-size 1
             .el-tag
                 height 20px
                 line-height 20px

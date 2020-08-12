@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <Header v-if="!['callback','Login'].includes($route.name)"></Header>
-    <router-view></router-view>
+    <Header v-if="!['callback','Login'].includes($route.name)" :notif-size="notifiSize"></Header>
+    <router-view @readNotif="loadNotif"></router-view>
     <Footer v-if="!['callback','Login'].includes($route.name)"></Footer>
   </div>
 </template>
@@ -14,6 +14,30 @@ export default {
   name: 'App',
   components: {
     Footer,Header
+  },
+  data(){
+    return {
+      notifiSize:0
+    }
+  },
+  created(){
+      this.loadNotif();
+  },
+  methods:{
+    loadNotif(){
+      let token = localStorage.getItem('token');
+      if(token) {
+        this.$axios
+                .post('/notification/getNotificationLen', {
+                  token: token
+                })
+                .then(successResponse => {
+                  if (successResponse.data.rspCode == 200) {
+                    this.notifiSize = successResponse.data.data.size;
+                  }
+                })
+      }
+    }
   }
 }
 </script>

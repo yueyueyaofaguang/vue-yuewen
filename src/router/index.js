@@ -17,7 +17,6 @@ Router.prototype.push = function push(location) {
 Vue.use(Router)
 
 export default new Router({
-    mode: 'history',
     routes:[
         {
         path: '/login',
@@ -28,6 +27,15 @@ export default new Router({
         path: '/index',
         name: 'AppIndex',
         component: Appindex
+        },
+        {
+            path: '/',
+            name: 'index',
+            redirect: '/index',
+            component: Appindex,
+            meta: {
+                requireAuth: true
+            }
         },
         {
             path:'/callback',

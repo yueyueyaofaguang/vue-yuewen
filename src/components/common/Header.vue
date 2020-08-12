@@ -4,16 +4,17 @@
         <div class="container">
             <ul class="container-left-ul">
                 <li @click="navigateTo('index')">
-                    <img id="icon" src="@/assets/icon.png"/>
+                    <img id="icon" src="@/assets/logo.png"/>
                 </li>
             </ul>
             <ul class="container-right-ul">
                 <li @click="tip" class="container-right-li"><span class="el-icon-info"></span>须知</li>
                 <li @click="navigateTo('publish')" class="container-right-li" v-show="hasLogin">提问</li>
                 <li @click="navigateTo('replies')" class="container-right-li" v-show="hasLogin">
-                    <el-badge :value="notifiSize" class="item" type="warning">
+                    <el-badge v-if="notifSize>0" :value="notifSize" class="item" type="warning">
                         <i class="iconfont icon-notification"/>
                     </el-badge>
+                    <i v-else class="iconfont icon-notification"/>
                 </li>
 
                 <li v-if="!hasLogin" @click="navigateTo('login')" class="container-right-li">登录</li>
@@ -25,7 +26,7 @@
                     </ul>
                 </li>
 
-                <li id="bars" @click="dropDownShow = !dropDownShow" v-show="hasLogin">
+                <li id="bars" @click="dropDownShow = !dropDownShow">
                     &#9776;
                 </li>
             </ul>
@@ -33,7 +34,7 @@
 
         <!-- 下拉菜单 -->
         <transition name="dropdown-fade-show">
-            <div v-show="hasLogin&&dropDownShow" class="dropdown">
+            <div v-show="dropDownShow" class="dropdown">
                 <ul>
                     <li @click="navigateTo('index')">首页</li>
                     <li>须知</li>
@@ -60,6 +61,7 @@
 <script>
     export default {
         name: "Footer",
+        props:['notifSize'],
         created(){
             this.loadData();
             document.addEventListener('click',(e)=>{
@@ -91,7 +93,6 @@
                 },
                 hasLogin:false,
                 user:null,
-                notifiSize:0
             };
         },
         methods: {
@@ -104,7 +105,7 @@
                 this.$msgbox({
                     title: '用户使用说明手册',
                     message: h('div', null,[h('p',{ style: 'color: teal;margin-bottom: 10px;'},' 欢迎大家来到本站，为了您的良好体验，如果发现bug请务必联系我， 您也可以提出对本站的建议，非常感谢，可以扫描首页右下的二维码加我好友， 顺便交个朋友~'),
-                        h('p',null,[h('span',{class:'el-icon-right',style: 'margin-right:3px'}),h('el-link',null,'戳源码地址，如果对您有帮助，请点个star，爱您！'),h('span',null,'')])]),
+                        h('p',null,[h('span',{class:'el-icon-right',style: 'margin-right:3px'}),h('el-link',{attrs:{href:"https://github.com/yueyueyaofaguang/vue-yuewen"}},'戳源码地址，如果对您有帮助，请点个star，爱您！'),h('span',null,'')])]),
                     confirmButtonText: '好滴',
                 })
             },
@@ -130,16 +131,7 @@
                                 this.navigateList.user = `/user/${this.user.id}`
                             }
                         })
-                    this.$axios
-                        .post('/notification/getNotificationLen',{
-                            token:token
-                        })
-                        .then(successResponse=>{
-                            if(successResponse.data.rspCode == 200){
-                                this.notifiSize = successResponse.data.data.size;
-                            }
-                        })
-            }
+                }
             }
         },
         watch:{
@@ -181,7 +173,7 @@
                     display inline-block
                     text-align center
                 #icon
-                    height 40px
+                    height 65px
                     vertical-align middle
                     transition transform 0.5s
                 #icon:hover

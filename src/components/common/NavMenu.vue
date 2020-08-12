@@ -71,9 +71,9 @@
             tip(){
                 const h = this.$createElement;
                 this.$msgbox({
-                    title: '用户使用说明手册',
+                    title: '用户使用说明手册111',
                     message: h('div', null,[h('p',{ style: 'color: teal;margin-bottom: 10px;'},' 欢迎大家来到本站，为了您的良好体验，如果发现bug请务必联系我， 您也可以提出对本站的建议，非常感谢，可以扫描首页右下的二维码加我好友， 顺便交个朋友~'),
-                        h('p',null,[h('span',{class:'el-icon-right',style: 'margin-right:3px'}),h('el-link',null,'戳源码地址，如果对您有帮助，请点个star，爱您！'),h('span',null,'')])]),
+                        h('p',null,[h('span',{class:'el-icon-right',style: 'margin-right:3px'}),h('el-link',{attrs:{href:"https://github.com/yueyueyaofaguang/vue-yuewen"}},'戳源码地址，如果对您有帮助，请点个star，爱您！'),h('span',null,'')])]),
                     confirmButtonText: '好滴',
                 })
             },

@@ -8,8 +8,9 @@
             <div class="date">
                 <div id="daymonth">{{`${new Date().getMonth()}月${new Date().getUTCDate()}`}}</div>
                 <div id="year">{{new Date().getFullYear()}}</div>
-                <p>play a game with time</p>
-                <p>it run,we catch it</p>
+                <p>Let's</p>
+                <p>play a game with <span class="strong">time</span></p>
+                <p>it runs,we catch it</p>
             </div>
         </div>
     </div>
@@ -45,7 +46,6 @@
         }
     }
 </script>
-
 <style scoped>
     .box-container{
         background-color: #d83d3d;
@@ -67,6 +67,11 @@
     .date #year {
         color:#C1C1C1;
         font-size:1.8em;
+    }
+
+    .date .strong{
+        font-weight: bold;
+        font-style: italic;
     }
 
     .clock {

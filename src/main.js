@@ -16,6 +16,7 @@ moment.tz.setDefault("Asia/Shanghai");
 moment.locale('zh-cn')
 
 axios.defaults.baseURL = 'http://112.124.17.27:8443/api'
+// axios.defaults.baseURL = 'http://localhost:8443/api'
 Vue.prototype.$axios = axios;
 Vue.prototype.moment = moment;
 

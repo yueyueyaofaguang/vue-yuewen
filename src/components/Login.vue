@@ -17,7 +17,7 @@
                     <el-tab-pane label="login" name="login">
 
                         <ul class="social-container">
-                            <a href="#"><li><i class="iconfont icon-qq"></i></li></a>
+<!--                            <a href="#"><li><i class="iconfont icon-qq"></i></li></a>-->
                             <a href="https://github.com/login/oauth/authorize?client_id=1437d3540ec352a5dc9f" @click="githubLogin">
                                 <li><i class="iconfont icon-github"></i></li>
                             </a>
@@ -41,7 +41,7 @@
                     <el-tab-pane label="register" name="register">
 
                         <ul class="social-container">
-                            <a href="#"><li><i class="iconfont icon-qq"></i></li></a>
+<!--                            <a href="#"><li><i class="iconfont icon-qq"></i></li></a>-->
                             <a href="#"><li><i class="iconfont icon-github"></i></li></a>
                         </ul>
 

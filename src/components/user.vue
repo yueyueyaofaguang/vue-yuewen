@@ -31,7 +31,7 @@
                         </span>
                         <div v-if="postData.data" class="question-item-container">
                             <div v-for="post in postData.data" :key="post.id" class="question-item">
-                                <el-link :href="`http://localhost:8080/question/${post.id}`" type="primary" :underline="false">{{post.title}}</el-link>
+                                <el-link :href="`http://112.124.17.27/#/question/${post.id}`" type="primary" :underline="false">{{post.title}}</el-link>
                                 <span class="desc">回复({{post.commentCount}})</span>
                                 <span class="right desc">{{moment(post.created).subtract(10, 'days').calendar()}}</span>
                             </div>
@@ -73,7 +73,7 @@
                                         </div>
                                     </div>
                                     <div class="item-right-bottom">
-                                        <el-link :href="`http://localhost:8080/question/${reply.post.id}`" type="primary" :underline="false">
+                                        <el-link :href="`http://112.124.17.27/#/question/${reply.post.id}`" type="primary" :underline="false">
                                             {{reply.post.title}}
                                         </el-link>
                                         <span>回复({{reply.post.commentCount}})</span>
