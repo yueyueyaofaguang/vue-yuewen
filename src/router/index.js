@@ -8,6 +8,7 @@ import publish from "@/components/publish";
 import user from "@/components/user";
 import replies from "@/components/replies";
 import question from "@/components/question";
+import RouterToCallBack from "@/components/RouterToCallBack";
 
 const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
@@ -24,18 +25,16 @@ export default new Router({
         component: Login
         },
         {
-        path: '/index',
-        name: 'AppIndex',
-        component: Appindex
+            path: '/index',
+            name: 'AppIndex',
+            component: Appindex
         },
         {
             path: '/',
             name: 'index',
             redirect: '/index',
             component: Appindex,
-            meta: {
-                requireAuth: true
-            }
+
         },
         {
             path:'/callback',
@@ -58,12 +57,20 @@ export default new Router({
         {
             path:'/replies',
             name: 'replies',
-            component: replies
+            component: replies,
+            meta: {
+                requireAuth: true
+            }
         },
         {
             path: '/question/:id',
             name: 'question',
             component: question
+        },
+        {
+            path:'/routerToCallBack',
+            name:'routerToCallBack',
+            component:RouterToCallBack
         }
     ]
 })

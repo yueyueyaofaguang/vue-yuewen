@@ -174,12 +174,10 @@
             this.loadReply(1);
             //判断用户
             this.$axios
-                .post(`/isMyself/${this.$route.params.id}`,{
-                    token:localStorage.getItem('token')
-                })
+                .get(`/isMyself/${this.$route.params.id}`,)
                 .then(successResponse=>{
                     console.log(successResponse);
-                    if(successResponse.data.rspCode==200){
+                    if(successResponse.data.code==200){
                         this.isMyself = true;
                     }
                 })

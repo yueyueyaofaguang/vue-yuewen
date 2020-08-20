@@ -1,11 +1,11 @@
 <template>
     <div id="#poster">
-        <div class="main">
+        <div class="main" v-if="post">
             <el-row :gutter="20">
                 <el-col :span="16">
                     <div class="grid-content bg-purple">
                         <div class="post-container">
-                            <h3>
+                            <h3 >
                                 {{post.title}}
                             </h3>
                             <p class="desc">
@@ -29,7 +29,7 @@
                             </p>
                         </div>
 
-                        <div class="comment-container">
+                        <div class="comment-container" >
                             <h3>{{post.commentCount}}个回复</h3>
                             <CommentItem v-for="comment in comments" :key="comment.id"  :post-id="post.id" :comment-data="comment" @comment="loadComments" @del="deleteComment"></CommentItem>
 
@@ -112,6 +112,7 @@
     import CommentItem from '@/components/common/CommentItem';
     import Item from "@/components/common/Item";
     import Clock from "@/components/Clock";
+    import axios from "axios";
 
     export default {
         name: "question",
@@ -152,11 +153,9 @@
                     .post(`/comment/${this.post.id}`,{
                         commentText:this.value,
                         parentId:this.post.id,
-                        token:localStorage.getItem('token'),
                         type:1
                     })
                     .then(successResponse=>{
-                        console.log(successResponse);
                         if(successResponse.data.rspCode == 200){
                             this.loading = false;
                             this.$notify({
@@ -174,28 +173,32 @@
                 this.$axios
                     .get(`/comment/${this.$route.params.id}`,{params:{current:this.currentPage}})
                     .then(successResponse=>{
-                        console.log(successResponse);
                         if(successResponse.data.rspCode == 200){
                             this.totalPage = successResponse.data.data.totalPage;
                             this.comments = successResponse.data.data.data;
+                            console.log("评论为");
+                            console.log(successResponse);
+                            console.log(this.comments);
                         }
                         this.loadPost();
                     })
             },
-            loadUserInfo() {
-                if(localStorage.getItem('token')) {
-                    this.hasLogin = true;
-                    this.$axios
-                        .post('/getUserInfo', {
-                            token: localStorage.getItem('token')
-                        })
-                        .then(sucessResponse => {
-                            if (sucessResponse.data.rspCode == 200) {
-                                console.log("set user")
-                                this.user = sucessResponse.data.data;
-                            }
-                        })
-                }
+            loadUserInfo(){
+                let user = localStorage.getItem('user');
+                if(user == null) return;
+                axios.get('/authentication').then(rsep=>{
+                    if(rsep){
+                        this.$axios
+                            .get('/getUserInfo')
+                            .then(successResponse=>{
+                                if(successResponse.data.code == 200){
+                                    console.log("setUser");
+                                    this.hasLogin = true;
+                                    this.user = successResponse.data.result;
+                                }
+                            })
+                    }
+                })
             },
             handleCurrentChange(val){
                 this.currentPage = val;
@@ -222,7 +225,6 @@
                         }}
                     )
                     .then(successResponse=>{
-                        console.log(successResponse);
                         if(successResponse.data.rspCode == 200){
                             this.relativePost = successResponse.data.data;
                         }

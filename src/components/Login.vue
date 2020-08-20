@@ -42,7 +42,7 @@
 
                         <ul class="social-container">
 <!--                            <a href="#"><li><i class="iconfont icon-qq"></i></li></a>-->
-                            <a href="#"><li><i class="iconfont icon-github"></i></li></a>
+                            <a href="https://github.com/login/oauth/authorize?client_id=1437d3540ec352a5dc9f" @click="githubLogin"><li><i class="iconfont icon-github"></i></li></a>
                         </ul>
 
                         <el-form :rules="rule" :model="registerForm" ref="registerForm">
@@ -86,14 +86,6 @@
 <script>
     export default {
         name: "Login",
-        created(){
-          let token = localStorage.getItem('token');
-          if(token)
-              this.$router.replace({
-                  path: '/index',
-                  replace:false
-              })
-        },
         data(){
             let checkCode = (rule,value,callback)=>{
                 if(value!=localStorage.getItem('code'))
@@ -144,31 +136,19 @@
         },
         methods:{
             login(){
-                let _this = this;
-                console.log({
-                    email: _this.loginForm.email,
-                    password: _this.loginForm.password
-                });
+                let  _this = this;
                 this.$axios
                     .post('/login',{
-                        email: _this.loginForm.email,
-                        password: _this.loginForm.password
+                        email: this.loginForm.email,
+                        password: this.loginForm.password
                     })
                     .then(successResponse=>{
-                        console.log(successResponse);
-                        if(successResponse.data.rspCode == 200){
-                            _this.$store.commit('login',
-                              successResponse.data.data
-                            )
-
-                            //获取登录前页面的路径并跳转，如果该路径不存在，则跳转到首页
-                            this.$router.replace({
-                                path: '/index',
-                                replace:false
-                            })
-                        }
-                        else{
-                            this.$message(successResponse.data.rspMsg);
+                        if(successResponse.data.code === 200){
+                            _this.$store.commit('login', this.loginForm);
+                            let path = this.$route.query.redirect;
+                            this.$router.replace({path: path === '/' || path === undefined ? '/index' : path})
+                        }else{
+                            this.$message(successResponse.data.message);
                         }
                     })
                     .catch(failResponse=>{

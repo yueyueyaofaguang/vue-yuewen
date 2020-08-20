@@ -26,6 +26,7 @@
                                                 <span>{{post.readCount}}次浏览</span>
                                             </p>
                                             <div slot="item-bot">
+                                                <el-tag class="isTop-tag" v-if="post.isTop">置顶</el-tag>
                                                 <el-tag type="danger" v-for="tag in post.tags" :key="tag">{{tag}}</el-tag>
                                             </div>
                                         </Item>
@@ -215,6 +216,11 @@
 </script>
 
 <style lang="stylus" scoped>
+    .isTop-tag.el-tag
+        background-color #d83d3d
+        color #ffffff
+        font-weight bold
+
     .todayOnHistory
         img
             width 100%

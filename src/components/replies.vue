@@ -27,10 +27,10 @@
                                         </div>
                                         <div class="cell">
                                             <div class="cell-left">
-                                                <span>回复我的主题："<router-link :to="`/question/${notif.post.id}`" @click.native="updateStatus(notif.id)">{{notif.post.title}}</router-link>"</span>
+                                                <span>回复我的主题："<router-link :to="`/#/question/${notif.post.id}`" @click.native="updateStatus(notif.id,notif.post.id)">{{notif.post.title}}</router-link>"</span>
                                             </div>
                                             <div class="cell-right">
-                                                <router-link :to="`/question/${notif.post.id}`" @click.native="updateStatus(notif.id)"><span class="reply-btn el-icon-chat-dot-square right">回复</span></router-link>
+                                                <router-link :to="`/#/question/${notif.post.id}`" @click.native="updateStatus(notif.id,notif.post.id)"><span class="reply-btn el-icon-chat-dot-square right">回复</span></router-link>
                                                 <span class="el-icon-delete right del-btn" @click="deletNotif(notif.id)">删除</span>
                                             </div>
                                         </div>
@@ -95,7 +95,7 @@
                 console.log(this.state);
                 console.log(this.currentPage);
                 this.$axios
-                    .post(`/notification/${this.state}/${this.currentPage}`,{token:localStorage.getItem('token')})
+                    .get(`/notification/${this.state}/${this.currentPage}`)
                     .then(successResponse=>{
                         console.log(successResponse);
                         if(successResponse.data.rspCode==200){
@@ -123,18 +123,17 @@
                 this.getData();
             },
             updateStatus(nid,pid){
-                console.log("setState");
                 this.$axios
                     .get(`/notification/updateStatus/${nid}`)
                     .then(successResponse=>{
                         console.log(successResponse);
+                        this.$router.app.$emit('readNotif');
                         this.$router.push(`/question/${pid}`);
                         return false;
                     })
                     .catch(error => {
                         console.log(error);
                     })
-                this.$emit('readNotif');
             },
             deletNotif(id){
                 this.$axios

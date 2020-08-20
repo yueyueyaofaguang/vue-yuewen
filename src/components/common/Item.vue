@@ -2,7 +2,7 @@
     <div class="item">
         <div class="item-top">
             <div class="item-top-left">
-                <el-link :href="`http://112.124.17.27/#/user/${uid}`" :underline="false">
+                <el-link :href="`http://localhost:8080/#/user/${uid}`" :underline="false">
                 <Avatar  :username="username"
                          :src="avatar"
                          background-color="#ccc"

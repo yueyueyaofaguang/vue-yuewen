@@ -28,27 +28,31 @@
                 }
             },40);
 
-            let code = this.$route.query.code;
+            let href = window.location.href;
+            let start = href.indexOf("?");
+            let end = href.indexOf("#");
+            let subHref = href.slice(start+1,end);
+            let code = subHref.split("=")[1];
+
             this.$axios
                 .get('/loginByGithub?code='+code)
                 .then(function (successResponse) {
-                    if(successResponse.data.rspCode == 200) {
+                    console.log(code);
+                    console.log(successResponse);
+                    if(successResponse.data.code == 200) {
                         _this.percentage = 100;
                         _this.$message("登录成功！正在为您跳转主页");
-                        _this.$store.commit('login',
-                            successResponse.data.data
+                        _this.$store.commit('login',{
+                            email:successResponse.data.result
+                        }
                         );
-                        //获取登录前页面的路径并跳转，如果该路径不存在，则跳转到首页
-                        _this.$router.replace({
-                            path: '/index',
-                            replace:false
-                        })
+                        window.location.href = "http://112.124.17.27/#/index";
                     }else{
-                        _this.$message(successResponse.data.rspMsg);
-                        _this.$router.replace({
-                            path: '/login',
-                            replace:false
-                        })
+                        _this.$message(successResponse.data.message);
+                        setTimeout(_=>{
+                            console.log(_);
+                            window.location.href = "http://112.124.17.27/#/login";
+                        },1000);
                     }
                 })
                 .catch(function (error) {

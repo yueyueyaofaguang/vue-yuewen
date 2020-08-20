@@ -1,14 +1,16 @@
 <template>
   <div id="app">
     <Header v-if="!['callback','Login'].includes($route.name)" :notif-size="notifiSize"></Header>
-    <router-view @readNotif="loadNotif"></router-view>
+    <router-view></router-view>
     <Footer v-if="!['callback','Login'].includes($route.name)"></Footer>
   </div>
 </template>
 
 <script>
+
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
+import axios from "axios";
 
 export default {
   name: 'App',
@@ -21,22 +23,28 @@ export default {
     }
   },
   created(){
-      this.loadNotif();
+      // this.loadNotif();
+      axios.get('/authentication').then(res=>{
+      console.log(res);})
+            .catch(error => {
+              console.log(error);
+            });
+      let _this = this;
+      this.$router.app.$on('readNotif', () => { _this.loadNotif() });
   },
   methods:{
     loadNotif(){
-      let token = localStorage.getItem('token');
-      if(token) {
-        this.$axios
-                .post('/notification/getNotificationLen', {
-                  token: token
-                })
-                .then(successResponse => {
-                  if (successResponse.data.rspCode == 200) {
-                    this.notifiSize = successResponse.data.data.size;
-                  }
-                })
-      }
+      let user = localStorage.getItem('user');
+      if(user == null) return;
+
+      this.$axios
+              .get('/notification/getNotificationLen')
+              .then(successResponse => {
+                if (successResponse.data.rspCode == 200) {
+                  console.log(successResponse.data.data.size);
+                  this.notifiSize = successResponse.data.data.size;
+                }
+              })
     }
   }
 }

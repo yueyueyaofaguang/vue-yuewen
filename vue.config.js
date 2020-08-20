@@ -38,8 +38,7 @@ module.exports = {
                 minRatio: 0.8
             }),
             new webpack.optimize.LimitChunkCountPlugin({
-                maxChunks: 5,
-                minChunkSize: 100
+                maxChunks: 5
             })
         ],
         optimization: {
@@ -64,10 +63,12 @@ module.exports = {
         },
         externals:{
             'vue': 'Vue',
-            'vue-router': 'VueRouter',
-            'element-ui': 'ElementUI',
+            // 'vue-router': 'VueRouter',
+            'element-ui': 'ELEMENT',
             'axios':'axios',
-            'moment-timezone':'momentTimezone'
+            'moment-timezone': 'moment',
+            "mavon-editor": "MavonEditor"
+            // 'moment-timezone':'moment'
         }
     }
 }

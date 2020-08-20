@@ -141,7 +141,6 @@
                 this.fullscreenLoading = true;
                 this.$axios
                     .post('/post/',{
-                        token:localStorage.getItem('token'),
                         title: this.title,
                         content: this.value,
                         tags: this.selectTags.join(';')

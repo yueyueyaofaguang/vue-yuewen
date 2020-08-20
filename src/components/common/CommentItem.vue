@@ -60,6 +60,7 @@
 
 <script>
     import Item from "@/components/common/Item";
+    import axios from "axios";
     export default {
         name: "commentItem",
         props: ['commentData', 'postId']
@@ -77,8 +78,22 @@
             }
         },
         created:function(){
-            if(localStorage.getItem('token'))
-                this.hasLogin = true;
+            let user = localStorage.getItem('user');
+            if(user == null) return;
+            axios.get('/authentication').then(rsep=>{
+                    if(rsep){
+                        this.$axios
+                            .get('/getUserInfo')
+                            .then(successResponse=>{
+                                if(successResponse.data.code == 200){
+                                    console.log("setUser");
+                                    this.hasLogin = true;
+                                    this.user = successResponse.data.result;
+                                    this.navigateList.user = `/user/${this.user.id}`
+                                }
+                            })
+                    }
+        })
         },
         methods:{
             replySubComment(username,id){
@@ -137,7 +152,6 @@
                     this.$axios
                         .delete(`/comment/${id}`)
                         .then(successResponse=>{
-                            console.log(successResponse);
                             if(successResponse.data.rspCode == 200){
                                 console.log("删除评论成功");
                                 this.$message({

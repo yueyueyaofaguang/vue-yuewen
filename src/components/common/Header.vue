@@ -22,7 +22,7 @@
                     <span v-if="user">{{user.username}}</span><span class="el-icon-caret-bottom"></span>
                     <ul v-show="subMenuList.user.turnlg">
                         <li @click="navigateTo('user')">我的主页</li>
-                        <li>退出登录</li>
+                        <li @click="logout">退出登录</li>
                     </ul>
                 </li>
 
@@ -59,11 +59,13 @@
 </template>
 
 <script>
+    import axios from "axios";
+
     export default {
         name: "Footer",
         props:['notifSize'],
         created(){
-            this.loadData();
+            this.loadUserInfo();
             document.addEventListener('click',(e)=>{
                 if(!this.subMenuList['user']['turnlg']) return;
                 var sp = document.getElementById("user");
@@ -113,25 +115,29 @@
                 this.subMenuList[name][turn] = !this.subMenuList[name][turn];
             },
             logout(){
+                console.log("out");
                 this.hasLogin = false;
                 localStorage.removeItem('token');
             },
-            loadData(){
-                let token = localStorage.getItem('token');
-                if(token){
-                    this.hasLogin = true;
-                    this.$axios
-                        .post('/getUserInfo',{
-                            token: token
-                        })
-                        .then(successResponse=>{
-                            if(successResponse.data.rspCode == 200){
-                                console.log("setUser");
-                                this.user = successResponse.data.data;
-                                this.navigateList.user = `/user/${this.user.id}`
-                            }
-                        })
-                }
+            loadUserInfo(){
+                let user = localStorage.getItem('user');
+                if(user == null) return;
+                axios.get('/authentication').then(rsep=>{
+                    if(rsep){
+                        this.$axios
+                            .get('/getUserInfo')
+                            .then(successResponse=>{
+                                console.log(successResponse);
+                                if(successResponse.data.code == 200){
+                                    console.log("setUser");
+                                    this.hasLogin = true;
+                                    this.user = successResponse.data.result;
+                                    console.log(this.user);
+                                    this.navigateList.user = `/user/${this.user.id}`
+                                }
+                            })
+                    }
+                })
             }
         },
         watch:{
@@ -139,7 +145,7 @@
                 handler(val,oldval){
                     console.log(val);//新路由信息
                     console.log(oldval);//老路由信息
-                    this.loadData();
+                    this.loadUserInfo();
                 },
                 deep:true
             }

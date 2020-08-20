@@ -7,16 +7,17 @@ import '../src/common/element-#F56C6C/index.css'
 
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
+import axios from 'axios'
+import moment from 'moment-timezone'
 
 Vue.config.productionTip = false
-
-const axios = require('axios');
-const moment = require('moment-timezone');
 moment.tz.setDefault("Asia/Shanghai");
 moment.locale('zh-cn')
 
-axios.defaults.baseURL = 'http://112.124.17.27:8443/api'
-// axios.defaults.baseURL = 'http://localhost:8443/api'
+axios.defaults.withCredentials = true
+// axios.defaults.baseURL = 'http://112.124.17.27:8443/api'
+axios.defaults.baseURL = 'http://localhost:8443/api'
+
 Vue.prototype.$axios = axios;
 Vue.prototype.moment = moment;
 
@@ -25,22 +26,20 @@ Vue.config.productionTip = false;
 Vue.use(ElementUI)
 Vue.use(mavonEditor)
 
-//意思是在访问每一个路由前调用。
 router.beforeEach((to,from,next)=>{
   if(to.meta.requireAuth){
-    console.log(store.state.token)
-    if(store.state.token){
-      console.log('has Token')
-      next()
+    if(store.state.user){
+      axios.get('/authentication').then(rsep=>{
+        if(rsep) next();
+      })
     }else{
-      console.log('has not Token')
       next({
         path: 'login',
         query: {redirect: to.fullPath}
       })
     }
   }else{
-    next()
+    next();
   }
 })
 
